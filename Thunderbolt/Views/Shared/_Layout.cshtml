@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html ng-app="wdgae_aod_app">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="~/Scripts/bootstrap.js"></script>
+    <link href="~/Content/App/bootstrap.css" rel="stylesheet" />
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/angular.js"></script>
+    <script src="~/Scripts/angular-sanitize.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div style="margin-left: 60px; margin-right: 60px; margin-bottom: 0px; margin-top: 7px;">
+                <span style="margin-top: 0px; margin-bottom: 0px; margin-left: 0px;">
+                    <img src="/Images/thunderbolt.png" style="width: 75px; height: 75px; margin-top: -6px; margin-bottom: 6px;margin-left:-25px;"><span style="font-size: 30px;color: #AFAFAF;font-weight: 600;">Employee Portal</span><span id="greetingHeader"><b id="welcomeB">Welcome </b><b id="usernameB">@ViewBag.Name</b></span></span>
+            </div>
+            <nav class="navbar navbar-default " ng-controller="navbarController">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+                        <li id="menuli" ng-click="onclickHomeTab()" class="{{HomeTab}}">
+                            <a href="@Url.Action("Index", "Home")" id="menuItem">Home</a>
+                        </li>
+                        <li id="menuli" ng-click="onclickDailyTab()" class="{{DailyTab}}">
+                            <a href="#" id="menuItem">Daily Records</a>
+                        </li>
+                        <li id="menuli" ng-click="onclickChartsTab()" class="{{ChartsTab}}">
+                            <a href="#" id="menuItem">Charts</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            @RenderBody()
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="footerDiv">
+                <div style="margin-left: 50px; margin-right: 30px;">
+                    <span>@*<span id="footerSpan1">For troubleshooting or support, please contact lsdian@Microsoft.com</span>*@<span id="footerSpan2">Copyright &copy; Thunderbolt</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>
+<script>
+    var AOD_App = angular.module('wdgae_aod_app', ['ngSanitize']);
+
+    AOD_App.controller('navbarController', function ($scope,$http,$compile) {
+        $scope.HomeTab = "active";
+        debugger;
+        $scope.DailyTab = "";
+        $scope.ChartsTab = "";
+
+
+        $scope.onclickHomeTab = function () {
+            $scope.HomeTab = "active";
+            debugger;
+            $scope.DailyTab = "";
+            $scope.ChartsTab = "";
+            
+
+        }
+        $scope.onclickDailyTab = function () {
+            debugger;
+            $http({
+                method: 'GET',
+                url: '@Url.Action("Daily", "Home")'
+            }).then(function successCallback(response) {
+                debugger;
+                $("#mainPartialDiv").html($compile(response.data)($scope));
+                // this callback will be called asynchronously
+                // when the response is available
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+            $scope.HomeTab = "";
+            $scope.DailyTab = "active";
+            $scope.ChartsTab = "";
+
+        }
+        $scope.onclickChartsTab = function () {
+            $http({
+                method: 'GET',
+                url: '@Url.Action("Charts", "Home")'
+            }).then(function successCallback(response) {
+                debugger;
+                $("#mainPartialDiv").html($compile(response.data)($scope));
+                // this callback will be called asynchronously
+                // when the response is available
+            }, function errorCallback(response) {
+                // called asynchronously if an error occurs
+                // or server returns response with an error status.
+            });
+            $scope.HomeTab = "";
+            $scope.DailyTab = "";
+            $scope.ChartsTab = "active";
+
+        }
+    });
+</script>
+

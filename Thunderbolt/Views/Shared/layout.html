@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #f1f1f8; ">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    <title>@ViewBag.Title - Smart Card Manager</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/layoutScripts")
+    @Styles.Render("~/bundles/bootstrapBundle")
+    @Styles.Render("~/bundles/unblockStyleBundle")
+</head>
+<body ng-app="unblockSMApp">
+    <div class="container-fluid" style="background-color: #f1f1f8; ">
+        <div class="row">
+            <div class="col-lg-offset-1 col-lg-10" style="padding-left:0px ;background-color:white;padding-right:0px;" ng-controller="navbarController">
+                <div ng-show="false">
+                    @*feedback changes*@
+                    <p id="PFeedBackMail">@ViewBag.FeedBackMail</p>
+                </div>
+                <nav id="navHeaderStyle" class="navbar navbar-inverse navbar-fixed-top col-lg-offset-1 col-lg-10">
+                    <div class="navbar-header">
+                        <p>
+                            <h2 style="margin-top: 0px;margin-bottom: 0px;"><img class="thumbimage" src="~/Images/key.png" alt="Thumbnail Image" width="35" height="30"><span style="font-size:30px; color:#1F4879;font-weight:bolder;">WDGII Smart Card Manager</span></h2>
+                        </p>
+                    </div>
+                    <div id="navDivStyle" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <h4 id="greetingHeader"><b id="welcomeB">Welcome </b><b id="cardusername">@ViewBag.ClaimsIdentity.Name</b> @*ADFS Changes*@</h4>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <nav class="navbar navbar-default navbar-fixed-top col-lg-offset-1 col-lg-10" style="margin-top:60px">
+                    <div class="navbar-header">
+                        <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                    </div>
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            @*Highlight changes*@
+                            <li ng-click="onclickHomeTab()" class={{HomeTab}}>
+                                <a href="@Url.Action("Index", "Home")" class="menuItem">Home</a>
+                            </li>
+                            <li ng-click="onclickContactTab()" class={{ContactTab}}>
+                                <a href="#" class="menuItem">Contact Us</a>
+                            </li>
+                            <li class={{FeedbackTab}}>
+                                <a href="mailto:someone@microsoft.com?Subject=Hello%20again" id="feedbackLink" class="menuItem">Feedback</a>
+                            </li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            @*Logout changes*@
+                            <li ng-click="onClickLogout()">
+                                <a href="#" class="menuItem">Logout</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <script>
+                var unblockSmartCardApp = angular.module('unblockSMApp', ['ngSanitize']);
+                //Highlight changes
+                unblockSmartCardApp.controller('navbarController', function ($scope, $http, $compile) {
+                    $scope.HomeTab = "active";
+                    $scope.ContactTab = "";
+                    $scope.FeedbackTab = "";
+                    //feedback changes
+                    $scope.feedbackEmail = "mailto:" + document.getElementById("PFeedBackMail").innerHTML + "?Subject=Feedback from wdgae user";
+
+                    $scope.onclickHomeTab = function () {
+                        $scope.HomeTab = "active";
+                        $scope.ContactTab = "";
+                        $scope.FeedbackTab = "";
+                    }
+                    $scope.onclickContactTab = function () {
+                        $scope.HomeTab = "";
+                        $scope.ContactTab = "active";
+                        $scope.FeedbackTab = "";
+
+                        $http({
+                            method: 'GET',
+                            url: '@Url.Action("contactPartial", "Home")'    //contact changes
+                        }).then(function successCallback(response) {
+                            $("#mainPartialDiv").html($compile(response.data)($scope));
+                        }, function errorCallback(response) {
+
+                        });
+                    }
+                    $scope.onclickFeedbackTab = function () {
+                        $scope.HomeTab = "";
+                        $scope.ContactTab = "";
+                        $scope.FeedbackTab = "active";
+                    }
+                    $scope.onClickLogout = function () {
+                        $http({
+                            method: 'POST',
+                            url: '@Url.Action("LogOff", "Home")'    //Logout changes
+                        }).then(function successCallback(response) {
+                            if (response) {
+                                window.location.href = response.data;
+                            }
+                        }, function errorCallback(response) {
+
+                        });
+                    }
+                });
+            </script>
+
+            <div class="col-lg-offset-1 col-lg-10" style="background-color:white;" id="body">
+                @RenderBody()
+            </div>
+            <footer id="footerStyle" class="navbar-default navbar-fixed-bottom col-lg-offset-1 col-lg-10">
+                <div>
+                    <div id="footerDiv">
+                        <p id="footerP">&copy; @DateTime.Now.Year - Microsoft Corporation</p>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    @RenderSection("scripts", required: false)
+    @RenderSection("styles", required: false)
+
+</body>
+</html>
